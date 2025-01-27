@@ -90,6 +90,10 @@ void init(void){
 
   digested = (byte**)malloc(sizeof(byte*) * digested_info.len);
   builder = (byte*)malloc(builder_info.len);
+
+  jayutil.memset(digested, 0, digested_info.len * sizeof(byte*));
+  jayutil.memset(builder, 0, builder_info.len);
+
 }
 
 
