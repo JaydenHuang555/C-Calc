@@ -129,7 +129,7 @@ double eval(byte *equation){
           break;
       }
     }
-    if(is_num(c) || JJ) builder_add(c);
+    if(is_num(c)) builder_add(c);
   }
   if(!BUILDER_ISEMPTY()) digested_add(builder);
   while(!stack.is_empty()) digested_add(stack.pop());
