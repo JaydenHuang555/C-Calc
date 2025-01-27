@@ -5,6 +5,8 @@
 #include "assert.h"
 #include "jayutil.h"
 
+#define nonnull __atritubte__((nonnull))
+
 int prec(byte c){
   switch(c){
     case '+':
@@ -95,9 +97,11 @@ void init(void){
   jayutil.memset(builder, 0, builder_info.len);
 
 }
-
-
-double eval(byte *equation){
+/**
+ * @param equation string equation 
+ * @return returns the result of the equation
+*/ 
+double eval(byte *equation) {
   init();
   stack.construct();
   for(int i = 0; i < jayutil.len(equation); i++){
@@ -118,7 +122,7 @@ double eval(byte *equation){
       if(!JJ)
       switch(c){
         case '(':
-          stack.push(")");
+          stack.push(stringize(c));
           break;
         case ')':
           while(!stack.is_empty() && *stack.peek() != '(') digested_add(stack.pop());
@@ -196,8 +200,9 @@ int main(int argc, byte **argv){
     byte buff[1024];
     jayutil.memset(buff, 0, sizeof(buff));
     fgets(buff, sizeof(buff), stdin);
+    for(int i = 0; i < sizeof(buff); i++) if(buff[i] == '\n') buff[i] = 0;
     if(jayutil.cmp(buff, EXIT_CMD) == 0) return 0;
-    else printf("%f\n", eval(buff));
+    printf("%f\n", eval(buff));
   }
   return 0;
 }

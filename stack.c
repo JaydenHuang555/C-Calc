@@ -6,7 +6,7 @@ struct node {
   struct node *prev, *next;
 };
 
-struct node *head, *tail;
+struct node *head = 0, *tail = 0;
 
 void construct(void){
   head = 0;
