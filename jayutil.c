@@ -69,9 +69,18 @@ static double stod(const char *str) {
     return result;
 }
 
+int cmp(const byte *cc, const byte *bb){
+  byte *c = (byte*)cc, *b = (byte*)bb;
+  while(*c && *b){
+    if(*(c++) != *(b++)) break;
+  }
+  return (*c - *b);
+}
+
 struct jayutil_t jayutil = {
     .display_string_array = display_string_array,
     .len = len,
     .memset = memset,
+    .cmp = cmp,
     .stod = stod
 };

@@ -35,7 +35,7 @@ byte *stringize(byte c){
 }
 
 int is_num(byte c){
-  return ('0' - 1) < c && c < ('9' + 1) || c == '.';
+  return (('0' - 1) < c && c < ('9' + 1)) || c == '.';
 }
 
 #define BUILDER_ISEMPTY() ((builder_info.off == 0))
@@ -118,7 +118,6 @@ double eval(byte *equation){
           break;
         case ')':
           while(!stack.is_empty() && *stack.peek() != '(') digested_add(stack.pop());
-          stack.pop();
           break;
         default:
           while(!stack.is_empty() && prec(*stack.pop()) > prec(c)) digested_add(stack.pop());
@@ -150,13 +149,13 @@ double eval(byte *equation){
       jayutil.memset(buff, 0, sizeof(double));
       switch(*token){
         case '+':
-          total = right + left;
+          total = left + right;
           break;
         case '-':
           total = left - right;
           break;
         case '*':
-          total = right * left;
+          total = left * right;
           break;
         case '/':
           total = left / right;
@@ -174,18 +173,18 @@ double eval(byte *equation){
     }
   }
 
-  byte *r = stack.pop(), *K;
-  double R = strtod(r, &K);
-
+  byte *K;
+  double ret = strtod(stack.pop(), &K);
   for(int i = 0; i < digested_info.off; i++){
     byte *c = digested[i];
     if(!prec(c[jayutil.len(c) - 1])) free(c);
   } 
 
   if(digested) free(digested);
-  if(builder) free(builder);
-  return R;
+  return ret;
 }
+
+#define EXIT_CMD "exit"
 
 int main(int argc, byte **argv){
   while(1 == 1){
@@ -193,7 +192,8 @@ int main(int argc, byte **argv){
     byte buff[1024];
     jayutil.memset(buff, 0, sizeof(buff));
     fgets(buff, sizeof(buff), stdin);
-    printf("%f\n", eval(buff));
+    if(jayutil.cmp(buff, EXIT_CMD) == 0) return 0;
+    else printf("%f\n", eval(buff));
   }
   return 0;
 }
