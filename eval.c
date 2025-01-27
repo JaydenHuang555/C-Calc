@@ -197,10 +197,10 @@ double eval(byte *equation) {
 int main(int argc, byte **argv){
   while(1 == 1){
     printf("please enter an equation: ");
-    byte buff[1024];
+    byte buff[1024], c;
+    int buff_off = 0;
     jayutil.memset(buff, 0, sizeof(buff));
-    fgets(buff, sizeof(buff), stdin);
-    for(int i = 0; i < sizeof(buff); i++) if(buff[i] == '\n') buff[i] = 0;
+    while(((c = fgetc(stdin)) != '\n') && buff_off < sizeof(buff)) buff[buff_off++] = c; 
     if(jayutil.cmp(buff, EXIT_CMD) == 0) return 0;
     printf("%f\n", eval(buff));
   }
