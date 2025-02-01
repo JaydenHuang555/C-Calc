@@ -5,8 +5,6 @@
 #include "assert.h"
 #include "jayutil.h"
 
-#define nonnull __atritubte__((nonnull))
-
 int prec(byte c){
   switch(c){
     case '+':
@@ -16,6 +14,8 @@ int prec(byte c){
     case '/':
     case '%':
       return 2;
+    case '^':
+      return 3;
     case '(':
     case ')':
       return -1;
@@ -59,6 +59,12 @@ struct info_t
 
 byte **digested, *builder;
 
+double power(double p, double n){
+  if(n == 0) return 1;
+  if(n < 0) return 1 / power(p, -n);
+  else return p * power(p, n - 1);
+}
+
 void digested_add(byte *item){
   assert(item && "attempted to digested a null string");
   digested[digested_info.off++] = item;
@@ -97,6 +103,16 @@ void init(void){
   jayutil.memset(builder, 0, builder_info.len);
 
 }
+
+double __pwr(double n, double p, double m){
+  if(n == 1) return p;
+  return __pwr(--n, p * m, m);
+}
+
+double pwr(double n, double p){
+  return __pwr(n, p, p);
+}
+
 /**
  * @param equation string equation 
  * @return returns the result of the equation
@@ -145,13 +161,9 @@ double eval(byte *equation) {
     if(is_num(token[jayutil.len(token) - 1])) stack.push(token);
     if(prec(token[jayutil.len(token) - 1])){
       double left, right;
-      byte *left_b, *right_b, *buffer;
-      right_b = stack.pop();
-      left_b = stack.pop();
-
-      right = strtod(right_b, &buffer);
-      left = strtod(left_b, &buffer);
-
+      byte *buffer;
+      right = strtod(stack.pop(), &buffer);
+      left = strtod(stack.pop(), &buffer);
       double total = 0;
       byte buff[sizeof(double) + 1];
       jayutil.memset(buff, 0, sizeof(double));
@@ -188,19 +200,25 @@ double eval(byte *equation) {
     if(!prec(c[jayutil.len(c) - 1])) free(c);
   } 
 
-  if(digested) free(digested);
+  free(digested);
   return ret;
 }
 
 #define EXIT_CMD "exit"
 
 int main(int argc, byte **argv){
+  printf("%f", power(2, -2));
   while(1 == 1){
     printf("please enter an equation: ");
     byte buff[1024], c;
-    int buff_off = 0;
+    unsigned long buff_off = 0;
     jayutil.memset(buff, 0, sizeof(buff));
-    while(((c = fgetc(stdin)) != '\n') && buff_off < sizeof(buff)) buff[buff_off++] = c; 
+    while(((c = fgetc(stdin)) != '\n')) {
+      if(buff_off < sizeof(buff) - 1){
+        fprintf(stderr, "given input is too large\n");
+        continue;
+      }
+    } 
     if(jayutil.cmp(buff, EXIT_CMD) == 0) return 0;
     printf("%f\n", eval(buff));
   }
