@@ -177,7 +177,8 @@ double eval(byte *equation) {
           break;
         case '^':
           total = 1;
-          for(int j = 0; j < right; j++) total *= left;
+          for(int j = 0; j < (right < 0 ? -right : right); j++) total = left;
+          total = right < 0 ? 1 / total : total;
           break;
         default:
           total = 0;
