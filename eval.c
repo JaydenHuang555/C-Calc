@@ -32,6 +32,7 @@ byte *stringize(byte c){
     case '%': return "%";
     case '(': return "(";
     case ')': return ")";
+    case '^': return "^";
     default: return 0;
   }
 }
@@ -59,10 +60,10 @@ struct info_t
 
 byte **digested, *builder;
 
-double power(double p, double n){
+double pwr(double p, double n){
   if(n == 0) return 1;
-  if(n < 0) return 1 / power(p, -n);
-  else return p * power(p, n - 1);
+  if(n < 0) return 1 / pwr(p, -n);
+  else return p * pwr(p, n - 1);
 }
 
 void digested_add(byte *item){
@@ -102,15 +103,6 @@ void init(void){
   jayutil.memset(digested, 0, digested_info.len * sizeof(byte*));
   jayutil.memset(builder, 0, builder_info.len);
 
-}
-
-double __pwr(double n, double p, double m){
-  if(n == 1) return p;
-  return __pwr(--n, p * m, m);
-}
-
-double pwr(double n, double p){
-  return __pwr(n, p, p);
 }
 
 /**
@@ -183,6 +175,10 @@ double eval(byte *equation) {
         case '%':
           total = (long long)left % (long long)right;
           break;
+        case '^':
+          total = 1;
+          for(int j = 0; j < right; j++) total *= left;
+          break;
         default:
           total = 0;
           assert(total && "invalid operator parsed");
@@ -207,18 +203,21 @@ double eval(byte *equation) {
 #define EXIT_CMD "exit"
 
 int main(int argc, byte **argv){
-  printf("%f", power(2, -2));
   while(1 == 1){
     printf("please enter an equation: ");
-    byte buff[1024], c;
-    unsigned long buff_off = 0;
+    unsigned long len = 0x10, off = 0;
+    byte *buff = (byte*)malloc(0x10);
     jayutil.memset(buff, 0, sizeof(buff));
-    while(((c = fgetc(stdin)) != '\n')) {
-      if(buff_off < sizeof(buff) - 1){
-        fprintf(stderr, "given input is too large\n");
-        continue;
+    byte c;
+    while(((c = fgetc(stdin)) != '\n')){
+      buff[off++] = c;
+      if(off == len){
+        byte *next = (byte*)malloc(len *= 2);
+        for(int i = 0; i < len; i++) next[i] = i / 2 > len ? buff[i] : 0;
+        free(buff);
+        buff = next;
       }
-    } 
+    }
     if(jayutil.cmp(buff, EXIT_CMD) == 0) return 0;
     printf("%f\n", eval(buff));
   }
