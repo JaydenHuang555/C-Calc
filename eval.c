@@ -33,7 +33,7 @@ byte *stringize(byte c){
     case '(': return "(";
     case ')': return ")";
     case '^': return "^";
-    default: return 0;
+    default:  return 0;
   }
 }
 
@@ -218,7 +218,7 @@ int main(int argc, byte **argv){
         buff = next;
       }
     }
-    if(jayutil.cmp(buff, EXIT_CMD) == 0) return 0;
+    if(!jayutil.cmp(buff, EXIT_CMD)) return 0;
     printf("%f\n", eval(buff));
   }
   return 0;

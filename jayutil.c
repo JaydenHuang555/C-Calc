@@ -22,51 +22,22 @@ static void *memset(void *buff, int c, unsigned long s){
   return buff;
 }
 
-static double stod(const char *str) {
-    double result = 0.0, fraction = 0.0, divisor = 0;
-    int is_negative = 0, is_fraction = 0;
-
-    if (str == NULL) {
-        return 0.0;
-    }
-
-    while (*str == ' ' || *str == '\t') {
-        str++;
-    }
-
-    if (*str == '-') {
-        is_negative = 1;
-        str++;
-    } else if (*str == '+') {
-        str++;
-    }
-
-    while (*str != '\0') {
-        if (*str >= '0' && *str <= '9') {
-            if (is_fraction) {
-                fraction += (*str - '0') / divisor;
-                divisor *= 10.0;
-            } else {
-                result = result * 10.0 + (*str - '0');
-            }
-        } else if (*str == '.') {
-            if (is_fraction) {
-                break;
-            }
-            is_fraction = 1;
-        } else {
-            break;
-        }
-        str++;
-    }
-
-    result += fraction;
-
-    if (is_negative) {
-        result = -result;
-    }
-
-    return result;
+static double stod(const byte *input){
+  size_t integerPlaces = 0, decimalPlaces = 0, isPassedDecimal = 0;
+  for(int i = 0; i < len((void*)input); i++){ 
+    if(input[i] != '.') integerPlaces++;
+    if(isPassedDecimal) decimalPlaces++;
+    else if(input[i] == '.') isPassedDecimal = 1;
+  }
+  double ret = 0;
+  int i = len((void*)input);
+  isPassedDecimal = 0;
+  for(;i != 0;){
+    
+    --i;
+  }
+  fprintf(stderr, "method is not done \n");
+  return ret;
 }
 
 int cmp(const byte *cc, const byte *bb){
